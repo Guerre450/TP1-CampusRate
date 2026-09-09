@@ -61,3 +61,10 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+
+## Run linting
+### Lint and autofix with eslint
+$ npm run lint
+
+### Format with prettier
+$ npm run format
