@@ -26,7 +26,8 @@ Copy the .env.example and name it .env, fill the following info:
 
 [Click here to navigate to initial concepts](https://github.com/Guerre450/TP1-CampusRate/tree/main/docs/initial_concepts)
 
-
+## Known Limits
+- Cannot GET the full list of ratings
 
 ## Project setup
 
