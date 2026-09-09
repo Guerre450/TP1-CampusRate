@@ -156,6 +156,13 @@
                 <mxCell id="14" style="edgeStyle=none;html=1;" edge="1" parent="1" source="5" target="8">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
+                <mxCell id="291" style="edgeStyle=none;html=1;" edge="1" parent="1" source="5" target="289">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1370" y="80"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
                 <mxCell id="5" value="Entry Point" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="350" width="120" height="60" as="geometry"/>
                 </mxCell>
@@ -820,6 +827,12 @@
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="920" y="717" as="targetPoint"/>
                     </mxGeometry>
+                </mxCell>
+                <mxCell id="289" value="docs" style="swimlane;whiteSpace=wrap;html=1;startSize=23;" vertex="1" parent="1">
+                    <mxGeometry x="1275" y="270" width="200" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="290" value="Swagger UI" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="289">
+                    <mxGeometry x="55" y="90" width="90" height="30" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
