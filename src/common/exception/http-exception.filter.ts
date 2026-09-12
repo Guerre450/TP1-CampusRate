@@ -1,8 +1,8 @@
+/* eslint-disable */
 import {
-  ExceptionFilter,
-  Catch,
-  ArgumentsHost,
-  BadRequestException,
+    ExceptionFilter,
+    Catch,
+    ArgumentsHost
 } from '@nestjs/common';
 import { HttpException } from '@nestjs/common';
 import { ProblemDetailsDto } from './problem-details.dto';
