@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   OnModuleDestroy,
   OnModuleInit,
 } from '@nestjs/common';
@@ -49,7 +50,7 @@ export class PlacesService implements OnModuleInit, OnModuleDestroy {
     }
     const result = await this.placeRepo.listByProperties(filter);
     if (!result.successful) {
-      throw new BadRequestException('This is not supposed to happen');
+      throw new InternalServerErrorException('This is not supposed to happen');
     }
     const returnedData = result.data ?? [];
     const totalItems = returnedData.length;
