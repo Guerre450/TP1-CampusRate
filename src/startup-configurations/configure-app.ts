@@ -7,5 +7,5 @@ export function configureApp(app: INestApplication): void {
     type: VersioningType.URI,
     defaultVersion: '1',
   });
-   app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalFilters(new HttpExceptionFilter());
 }

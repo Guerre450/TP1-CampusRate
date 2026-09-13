@@ -1,4 +1,9 @@
-import { ExceptionFilter, Catch, ArgumentsHost, BadRequestException } from '@nestjs/common';
+/* eslint-disable */
+import {
+    ExceptionFilter,
+    Catch,
+    ArgumentsHost
+} from '@nestjs/common';
 import { HttpException } from '@nestjs/common';
 import { ProblemDetailsDto } from './problem-details.dto';
 
@@ -9,15 +14,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse();
     const request = ctx.getRequest();
     const status = exception.getStatus();
-    const problemDetailsDto : ProblemDetailsDto = {
-        type : "about:blank",
-        title : exception.name,
-        detail : exception.message,
-        instance : request.url,
-        status : status,
-    } 
-    response
-      .status(status)
-      .json(problemDetailsDto);
+    const problemDetailsDto: ProblemDetailsDto = {
+      type: 'about:blank',
+      title: exception.name,
+      detail: exception.message,
+      instance: request.url,
+      status: status,
+    };
+    response.status(status).json(problemDetailsDto);
   }
 }

@@ -1,0 +1,92 @@
+
+import { BadRequestException, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { CreatePlaceDto } from './dto/create-place.dto';
+import { UpdatePlaceDto } from './dto/update-place.dto';
+import { JsonRepository, PropertyKey } from 'src/common/repository/json-repository';
+import { Place } from './entities/place.entity';
+import { openJsonDataFile } from 'src/common/json/json-operations';
+import { PageDetailsDto } from 'src/common/page-details/page-details.dto';
+
+@Injectable()
+export class PlacesService implements OnModuleInit, OnModuleDestroy {
+  placeRepo: JsonRepository<Place>
+  async onModuleInit() {
+    this.placeRepo = new JsonRepository<Place>(await openJsonDataFile(process.env.DATA_FILE_PATH ?? "/dammit/", "place.json"))
+    await this.placeRepo.load()
+  }
+  async onModuleDestroy() {
+    await this.placeRepo.close()
+  }
+
+
+
+  async create(createPlaceDto: CreatePlaceDto) {
+    const result = await this.placeRepo.create(new Place(createPlaceDto));
+    if (!result.successful) {
+      throw new BadRequestException("Couldn't create entity")
+    }
+  
+    return result.data ?? {}
+  }
+
+  async findAll(category?: string, page: number = 1, limit: number = 1) {
+    const filter: PropertyKey[] = []
+    if (category) {
+      filter.push({
+        propertyName: "category",
+        value: category
+      })
+    }
+    const result = await this.placeRepo.listByProperties(filter)
+    if (!result.successful ){
+      throw new BadRequestException("This is not supposed to happen")
+    }
+    const returnedData = result.data ?? [];
+    const totalItems = returnedData.length
+    const totalPages = Math.ceil(returnedData.length / limit)
+    const fomatting : PageDetailsDto<Place> = {
+      data : returnedData.splice((page -1) * limit, limit),
+      pagination : {
+        page : page,
+        limit : limit,
+        totalItems : totalItems,
+        totalPages : totalPages
+      }
+    }
+    return fomatting;
+
+  }
+
+  async findOne(id: string) {
+    const result = await this.placeRepo.findByProperties([{
+      propertyName : "id",
+      value : id
+    }])
+    if (!result.successful ){
+      throw new BadRequestException("Did not find the place with the requested id")
+    }
+    return result.data ?? {} 
+  }
+
+  async update(id: string, updatePlaceDto: UpdatePlaceDto) {
+    const result = await this.placeRepo.updateByProperties([{
+      propertyName : "id",
+      value : id
+    }], updatePlaceDto)
+    if (!result.successful ){
+      throw new BadRequestException("Did not find the place with the requested id")
+    }
+    return result.data ?? {}
+  }
+
+  async remove(id: string) {
+    const result = await this.placeRepo.deleteByProperties([{
+      propertyName : "id",
+      value : id
+    }])
+    if (!result.successful ){
+      throw new BadRequestException("Couldn't find the requested place with the id for deletion")
+    }
+    return ""
+  }
+}

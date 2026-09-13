@@ -85,6 +85,12 @@ export class JsonRepository<Type extends object> {
     }
   }
 
+  length() : number
+  {
+    return this.datas.length
+  }
+
+
   async createFromList(entities: Type[]): Promise<repoOperationResult<Type[]>> {
     this.datas = this.datas.concat(entities);
     await this.write();
