@@ -29,7 +29,5 @@ GET http://0.0.0.0:3000/api/{{version}}/{{route}}/?category=STUDY_SPACE&page=2&l
 
 
 
-
-
 ### @name get_id_places_fail
 GET http://0.0.0.0:3000/api/{{version}}/{{route}}/21 HTTP/1.1

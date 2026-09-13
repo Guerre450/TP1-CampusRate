@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateRatingDto } from './dto/create-rating.dto';
 import { UpdateRatingDto } from './dto/update-rating.dto';
 import { Rating } from './entities/rating.entity';
@@ -9,7 +9,7 @@ import { PlacesService } from 'src/places/places.service';
 
 @Injectable()
 export class RatingsService {
-  constructor(private placesService: PlacesService) { }
+  constructor(@Inject(forwardRef(()=> PlacesService)) private placesService: PlacesService) { }
   ratingRepo: JsonRepository<Rating>;
   async onModuleInit() {
     this.ratingRepo = new JsonRepository<Rating>(
@@ -26,7 +26,8 @@ export class RatingsService {
 
 
   async create(createRatingDto: CreateRatingDto) {
-    if (await this.placesService.findOne(createRatingDto.placeId)) {
+    const result = await this.placesService.findOne(createRatingDto.placeId)
+    if (result) {
       const result = await this.ratingRepo.create(new Rating(createRatingDto))
       if (!result.successful) {
         throw new BadRequestException("Couldn't create Rating")

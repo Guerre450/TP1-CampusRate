@@ -55,21 +55,20 @@ export class JsonRepository<Type extends object> {
   private async write() {
     await this.fileHandler.truncate();
     await this.fileHandler.write(JSON.stringify(this.datas), 0);
+    await this.fileHandler.sync()
   }
 
   async load() {
+    await this.fileHandler.sync()
     await this.read();
   }
   private async read() {
     try {
-      const stream = this.fileHandler.createReadStream({start : 0, end : Number.MAX_SAFE_INTEGER, encoding : "utf8", emitClose : false, autoClose : false})
-      let buffer : string = ""
-      await stream.forEach(
-        (data : string) => {
-          buffer += data
-        } 
-      )
-      const tempDatas: object[] = JSON.parse(buffer);
+      const stats = (await this.fileHandler.stat())
+      let buffer = Buffer.alloc(stats.size) // Allocate a buffer to hold the data
+      buffer = (await this.fileHandler.read(buffer,0,buffer.length,0)).buffer
+      console.log(buffer.toString())
+      const tempDatas: object[] = JSON.parse(buffer.toString());
       
       if (
         !doesObjectListHasFields(
@@ -99,6 +98,7 @@ export class JsonRepository<Type extends object> {
 
 
   async createFromList(entities: Type[]): Promise<repoOperationResult<Type[]>> {
+    await this.load()
     this.datas = this.datas.concat(entities);
     await this.write();
     return { successful: true, data: entities };

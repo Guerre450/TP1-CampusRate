@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
   OnApplicationBootstrap,
@@ -15,9 +17,12 @@ import {
 import { CreatePlaceDto } from './dto/create-place.dto';
 import { UpdatePlaceDto } from './dto/update-place.dto';
 import { Place } from './entities/place.entity';
+import { RatingsService } from 'src/ratings/ratings.service';
 
 @Injectable()
 export class PlacesService implements OnApplicationBootstrap, OnApplicationShutdown {
+
+  constructor(@Inject(forwardRef(()=> RatingsService)) private readonly ratingsService: RatingsService) {}
   placeRepo: JsonRepository<Place>;
   async onApplicationBootstrap() {
    this.placeRepo = new JsonRepository<Place>(
@@ -72,6 +77,7 @@ export class PlacesService implements OnApplicationBootstrap, OnApplicationShutd
   }
 
   async findOne(id: string) {
+    console.log("find one")
     const result = await this.placeRepo.findByProperties([
       {
         propertyName: 'id',
@@ -106,6 +112,9 @@ export class PlacesService implements OnApplicationBootstrap, OnApplicationShutd
   }
 
   async remove(id: string) {
+    if (((await this.ratingsService.findAll(id)).length > 0)){
+      throw new BadRequestException("Cannot delete a place which has ratings")
+    }
     const result = await this.placeRepo.deleteByProperties([
       {
         propertyName: 'id',
