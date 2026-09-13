@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { PlacesService } from './places.service';
 import { CreatePlaceDto } from './dto/create-place.dto';
@@ -21,13 +22,17 @@ export class PlacesController {
   }
 
   @Get()
-  async findAll() {
-    return await this.placesService.findAll();
+  async findAll(
+    @Query('category') category?: string,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 2,
+  ) {
+    return await this.placesService.findAll(category, page, limit);
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return await this.placesService.findOne(+id);
+    return await this.placesService.findOne(id);
   }
 
   @Patch(':id')
@@ -35,11 +40,11 @@ export class PlacesController {
     @Param('id') id: string,
     @Body() updatePlaceDto: UpdatePlaceDto,
   ) {
-    return await this.placesService.update(+id, updatePlaceDto);
+    return await this.placesService.update(id, updatePlaceDto);
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return await this.placesService.remove(+id);
+    return await this.placesService.remove(id);
   }
 }

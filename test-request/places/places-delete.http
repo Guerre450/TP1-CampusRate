@@ -1,0 +1,11 @@
+# @import ./places-post.http
+@route = places
+@version = v1
+
+
+
+
+### 
+# @name delete_place
+# @ref create_place
+DELETE http://0.0.0.0:3000/api/{{version}}/{{route}}/{{create_place.id}} HTTP/1.1
