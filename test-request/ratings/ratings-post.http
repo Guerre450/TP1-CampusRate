@@ -1,0 +1,22 @@
+#  @import ./../places/places-post.http
+@route = ratings
+@version = v1
+###
+# @name create_rating
+# @ref create_place
+@foo={{create_place.id}}
+POST http://0.0.0.0:3000/api/{{version}}/{{route}} HTTP/1.1
+Content-Type: application/json
+<@ ./request-content/one-rating.json
+
+###
+# @name create_rating_1
+# @ref create_place
+POST http://0.0.0.0:3000/api/{{version}}/{{route}} HTTP/1.1
+Content-Type: application/json
+{
+    "placeId" : "{{create_place.id}}",
+    "authorName" : "pooter",
+    "rating" : 4,
+    "comment" : "calm and has stable wi-fi"
+}

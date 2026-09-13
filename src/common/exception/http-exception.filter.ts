@@ -20,6 +20,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       detail: exception.message,
       instance: request.url,
       status: status,
+      errors : [`${exception.cause}`]
     };
     response.status(status).json(problemDetailsDto);
   }

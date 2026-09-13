@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreatePlaceDto {
   @IsString()
@@ -13,7 +13,7 @@ export class CreatePlaceDto {
   @IsString()
   @IsNotEmpty()
   address!: string;
-  @IsString()
+  @IsArray()
   @IsOptional()
   services?: string[];
   @IsString()

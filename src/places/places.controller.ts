@@ -7,6 +7,9 @@ import {
   Param,
   Delete,
   Query,
+  HttpCode,
+  HttpStatus,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { PlacesService } from './places.service';
 import { CreatePlaceDto } from './dto/create-place.dto';
@@ -24,8 +27,8 @@ export class PlacesController {
   @Get()
   async findAll(
     @Query('category') category?: string,
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 2,
+    @Query('page', new ParseIntPipe()) page: number = 1,
+    @Query('limit', new ParseIntPipe()) limit: number = 2,
   ) {
     return await this.placesService.findAll(category, page, limit);
   }
@@ -42,7 +45,7 @@ export class PlacesController {
   ) {
     return await this.placesService.update(id, updatePlaceDto);
   }
-
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return await this.placesService.remove(id);
