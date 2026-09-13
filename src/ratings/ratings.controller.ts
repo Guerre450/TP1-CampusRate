@@ -19,17 +19,16 @@ export class RatingsController {
   async findOne(@Param('id') id: string) {
     return await this.ratingsService.findOne(id);
   }
-  @Get('places/:place-id')
-  async findAllOfPlace(@Param('place-id') placeId: string) {
+  @Get('places/:placeId')
+  async findAllOfPlace(@Param('placeId') placeId: string) {
     return await this.ratingsService.findAll(placeId);
   }
 
-  @Post(':place-id')
+  @Post()
   async create(
-    @Param('place-id') placeId: string,
     @Body() createRatingDto: CreateRatingDto,
   ) {
-    return await this.ratingsService.create(placeId, createRatingDto);
+    return await this.ratingsService.create(createRatingDto);
   }
 
   @Patch(':id')

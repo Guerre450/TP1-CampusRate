@@ -1,0 +1,25 @@
+#  @import ./../places/places-post.http
+#  @import ./ratings-post.http
+@route = ratings
+@version = v1
+
+
+
+###
+# @name get_id
+# @ref create_rating
+GET http://0.0.0.0:3000/api/{{version}}/{{route}}/{{create_rating.id}} HTTP/1.1
+###
+# @name get_id_fail
+GET http://0.0.0.0:3000/api/{{version}}/{{route}}/400 HTTP/1.1
+
+
+
+###
+# @name list_for_place
+# @ref create_place
+GET http://0.0.0.0:3000/api/{{version}}/{{route}}/places/{{create_place.id}} HTTP/1.1
+
+###
+# @name list_for_place_empty_list
+GET http://0.0.0.0:3000/api/{{version}}/{{route}}/places/sasdsdf HTTP/1.1

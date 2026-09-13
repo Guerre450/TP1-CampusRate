@@ -76,7 +76,7 @@ export class PlacesService implements OnModuleInit, OnModuleDestroy {
     ]);
     if (!result.successful) {
       throw new BadRequestException(
-        'Did not find the place with the requested id',
+        `Did not find the place with the requested : ${id}`,
       );
     }
     return result.data ?? {};
