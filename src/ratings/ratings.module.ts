@@ -6,5 +6,6 @@ import { PlacesService } from 'src/places/places.service';
 @Module({
   controllers: [RatingsController],
   providers: [RatingsService, PlacesService],
+  imports : [RatingsModule]
 })
 export class RatingsModule {}

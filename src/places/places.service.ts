@@ -2,24 +2,25 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  OnModuleDestroy,
-  OnModuleInit,
+  OnApplicationBootstrap,
+  OnApplicationShutdown,
+  Scope
 } from '@nestjs/common';
-import { CreatePlaceDto } from './dto/create-place.dto';
-import { UpdatePlaceDto } from './dto/update-place.dto';
+import { openJsonDataFile } from 'src/common/json/json-operations';
+import { PageDetailsDto } from 'src/common/page-details/page-details.dto';
 import {
   JsonRepository,
   PropertyKey,
 } from 'src/common/repository/json-repository';
+import { CreatePlaceDto } from './dto/create-place.dto';
+import { UpdatePlaceDto } from './dto/update-place.dto';
 import { Place } from './entities/place.entity';
-import { openJsonDataFile } from 'src/common/json/json-operations';
-import { PageDetailsDto } from 'src/common/page-details/page-details.dto';
 
 @Injectable()
-export class PlacesService implements OnModuleInit, OnModuleDestroy {
+export class PlacesService implements OnApplicationBootstrap, OnApplicationShutdown {
   placeRepo: JsonRepository<Place>;
-  async onModuleInit() {
-    this.placeRepo = new JsonRepository<Place>(
+  async onApplicationBootstrap() {
+   this.placeRepo = new JsonRepository<Place>(
       await openJsonDataFile(
         process.env.DATA_FILE_PATH ?? '/dammit/',
         'place.json',
@@ -27,9 +28,12 @@ export class PlacesService implements OnModuleInit, OnModuleDestroy {
     );
     await this.placeRepo.load();
   }
-  async onModuleDestroy() {
-    await this.placeRepo.close();
+
+    async onApplicationShutdown(signal?: string) {
+      await this.placeRepo.close();
   }
+
+
 
   async create(createPlaceDto: CreatePlaceDto) {
     const result = await this.placeRepo.create(new Place(createPlaceDto));
@@ -74,6 +78,7 @@ export class PlacesService implements OnModuleInit, OnModuleDestroy {
         value: id,
       },
     ]);
+    console.log(result)
     if (!result.successful) {
       throw new BadRequestException(
         `Did not find the place with the requested : ${id}`,

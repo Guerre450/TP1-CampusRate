@@ -8,7 +8,7 @@ export class Place {
   address!: string;
   services: string[] = [];
   status: string = 'ACTIVE';
-  averageRating?: number;
+  averageRating: number = NaN;
   reviewCount: number = 0;
   createdAt: Date;
   updatedAt: Date;
