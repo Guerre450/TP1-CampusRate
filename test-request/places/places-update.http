@@ -1,0 +1,17 @@
+# @import ./places-post.http
+@route = places
+@version = v1
+
+### 
+# @name update_place
+# @ref create_place
+PATCH http://0.0.0.0:3000/api/{{version}}/{{route}}/{{create_place.id}} HTTP/1.1
+Content-Type: application/json
+< ./request-content/one-place-updated.json
+
+### 
+# @name update_place_fail
+# @ref create_place
+PATCH http://0.0.0.0:3000/api/{{version}}/{{route}}/2 HTTP/1.1
+Content-Type: application/json
+< ./request-content/one-place-updated.json
