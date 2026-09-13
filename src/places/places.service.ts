@@ -89,7 +89,7 @@ export class PlacesService implements OnModuleInit, OnModuleDestroy {
           value: id,
         },
       ],
-      updatePlaceDto,
+      {...updatePlaceDto, updatedAt : new Date()},
     );
     if (!result.successful) {
       throw new BadRequestException(
