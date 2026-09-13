@@ -55,15 +55,21 @@ export class JsonRepository<Type extends object> {
   private async write() {
     await this.fileHandler.truncate();
     await this.fileHandler.write(JSON.stringify(this.datas), 0);
+    await this.fileHandler.sync()
   }
 
   async load() {
+    await this.fileHandler.sync()
     await this.read();
   }
   private async read() {
     try {
-      const buffer = await this.fileHandler.readFile({ encoding: 'utf8' });
-      const tempDatas: object[] = JSON.parse(buffer);
+      const stats = (await this.fileHandler.stat())
+      let buffer = Buffer.alloc(stats.size) // Allocate a buffer to hold the data
+      buffer = (await this.fileHandler.read(buffer,0,buffer.length,0)).buffer
+      console.log(buffer.toString())
+      const tempDatas: object[] = JSON.parse(buffer.toString());
+      
       if (
         !doesObjectListHasFields(
           tempDatas,
@@ -75,7 +81,7 @@ export class JsonRepository<Type extends object> {
       this.datas = tempDatas as Type[];
     } catch (exception: any) {
       if (exception instanceof SyntaxError) {
-        //console.log(exception.stack)
+        console.log(exception.stack)
         console.log(`json has incorrect type, resetting file...`);
       } else {
         if (exception instanceof Error) {
@@ -92,12 +98,14 @@ export class JsonRepository<Type extends object> {
 
 
   async createFromList(entities: Type[]): Promise<repoOperationResult<Type[]>> {
+    await this.load()
     this.datas = this.datas.concat(entities);
     await this.write();
     return { successful: true, data: entities };
   }
 
   async create(entity: Type): Promise<repoOperationResult<Type>> {
+    await this.load()
     this.datas.push(entity);
     await this.write();
     return { successful: true, data: entity };
@@ -120,6 +128,7 @@ export class JsonRepository<Type extends object> {
   async findByProperties(
     properties: PropertyKey[],
   ): Promise<repoOperationResult<Type>> {
+    await this.load()
     const result = this.datas.find((data) => {
       return this.doesDataHasValue(data, properties);
     });
@@ -131,6 +140,7 @@ export class JsonRepository<Type extends object> {
   async listByProperties(
     properties: PropertyKey[] = [],
   ): Promise<repoOperationResult<Type[]>> {
+    await this.load()
     const result = this.datas.filter((data) => {
       return this.doesDataHasValue(data, properties);
     });
@@ -150,6 +160,7 @@ export class JsonRepository<Type extends object> {
     properties: PropertyKey[],
     updatedValues: Partial<Type>,
   ): Promise<repoOperationResult<Type>> {
+    await this.load()
     return await this.update(
       this.findIndexByProperties(properties),
       updatedValues,
@@ -163,23 +174,30 @@ export class JsonRepository<Type extends object> {
       return { successful: false };
     }
     Object.assign(this.datas[index], updatedValues);
+    await this.write()
     return { successful: true, data: this.datas[index] };
   }
   async deleteByProperties(
     properties: PropertyKey[],
   ): Promise<repoOperationResult<Type>> {
-    return {
-      successful: await this.delete(this.findIndexByProperties(properties)),
-    };
+    await this.load()
+    return await this.delete(this.findIndexByProperties(properties))
+  
   }
 
-  private async delete(index: number): Promise<boolean> {
+  private async delete(index: number): Promise<repoOperationResult<Type>> {
     if (index < 0) {
-      return false;
+      return {successful : false}
     }
-    this.datas.splice(index, 1);
-    await this.write();
-    return true;
+    const results = this.datas.splice(index, 1);
+    if (results.length > 0){
+      await this.write();
+      return {
+        successful : true,
+        data : results[0]
+      }
+    }
+    return {successful : false};
   }
 
   async close() {

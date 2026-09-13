@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { RatingsService } from './ratings.service';
 import { CreateRatingDto } from './dto/create-rating.dto';
@@ -19,17 +21,14 @@ export class RatingsController {
   async findOne(@Param('id') id: string) {
     return await this.ratingsService.findOne(id);
   }
-  @Get('places/:place-id')
-  async findAllOfPlace(@Param('place-id') placeId: string) {
+  @Get('places/:placeId')
+  async findAllOfPlace(@Param('placeId') placeId: string) {
     return await this.ratingsService.findAll(placeId);
   }
 
-  @Post(':place-id')
-  async create(
-    @Param('place-id') placeId: string,
-    @Body() createRatingDto: CreateRatingDto,
-  ) {
-    return await this.ratingsService.create(placeId, createRatingDto);
+  @Post()
+  async create(@Body() createRatingDto: CreateRatingDto) {
+    return await this.ratingsService.create(createRatingDto);
   }
 
   @Patch(':id')
@@ -39,7 +38,7 @@ export class RatingsController {
   ) {
     return await this.ratingsService.update(id, updateRatingDto);
   }
-
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return await this.ratingsService.remove(id);

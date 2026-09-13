@@ -1,0 +1,11 @@
+#  @import ./../places/places-post.http
+#  @import ./ratings-post.http
+@route = ratings
+@version = v1
+
+
+
+###
+# @name delete_rating
+# @ref create_rating
+DELETE http://0.0.0.0:3000/api/{{version}}/{{route}}/{{create_rating.id}} HTTP/1.1

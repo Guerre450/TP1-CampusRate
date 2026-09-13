@@ -1,24 +1,31 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
-  OnModuleDestroy,
-  OnModuleInit,
+  InternalServerErrorException,
+  OnApplicationBootstrap,
+  OnApplicationShutdown,
+  Scope
 } from '@nestjs/common';
-import { CreatePlaceDto } from './dto/create-place.dto';
-import { UpdatePlaceDto } from './dto/update-place.dto';
+import { openJsonDataFile } from 'src/common/json/json-operations';
+import { PageDetailsDto } from 'src/common/page-details/page-details.dto';
 import {
   JsonRepository,
   PropertyKey,
 } from 'src/common/repository/json-repository';
+import { CreatePlaceDto } from './dto/create-place.dto';
+import { UpdatePlaceDto } from './dto/update-place.dto';
 import { Place } from './entities/place.entity';
-import { openJsonDataFile } from 'src/common/json/json-operations';
-import { PageDetailsDto } from 'src/common/page-details/page-details.dto';
+import { RatingsService } from 'src/ratings/ratings.service';
 
 @Injectable()
-export class PlacesService implements OnModuleInit, OnModuleDestroy {
+export class PlacesService implements OnApplicationBootstrap, OnApplicationShutdown {
+
+  constructor(@Inject(forwardRef(()=> RatingsService)) private readonly ratingsService: RatingsService) {}
   placeRepo: JsonRepository<Place>;
-  async onModuleInit() {
-    this.placeRepo = new JsonRepository<Place>(
+  async onApplicationBootstrap() {
+   this.placeRepo = new JsonRepository<Place>(
       await openJsonDataFile(
         process.env.DATA_FILE_PATH ?? '/dammit/',
         'place.json',
@@ -26,9 +33,12 @@ export class PlacesService implements OnModuleInit, OnModuleDestroy {
     );
     await this.placeRepo.load();
   }
-  async onModuleDestroy() {
-    await this.placeRepo.close();
+
+    async onApplicationShutdown(signal?: string) {
+      await this.placeRepo.close();
   }
+
+
 
   async create(createPlaceDto: CreatePlaceDto) {
     const result = await this.placeRepo.create(new Place(createPlaceDto));
@@ -49,7 +59,7 @@ export class PlacesService implements OnModuleInit, OnModuleDestroy {
     }
     const result = await this.placeRepo.listByProperties(filter);
     if (!result.successful) {
-      throw new BadRequestException('This is not supposed to happen');
+      throw new InternalServerErrorException('This is not supposed to happen');
     }
     const returnedData = result.data ?? [];
     const totalItems = returnedData.length;
@@ -67,15 +77,17 @@ export class PlacesService implements OnModuleInit, OnModuleDestroy {
   }
 
   async findOne(id: string) {
+    console.log("find one")
     const result = await this.placeRepo.findByProperties([
       {
         propertyName: 'id',
         value: id,
       },
     ]);
+    console.log(result)
     if (!result.successful) {
       throw new BadRequestException(
-        'Did not find the place with the requested id',
+        `Did not find the place with the requested : ${id}`,
       );
     }
     return result.data ?? {};
@@ -100,6 +112,9 @@ export class PlacesService implements OnModuleInit, OnModuleDestroy {
   }
 
   async remove(id: string) {
+    if (((await this.ratingsService.findAll(id)).length > 0)){
+      throw new BadRequestException("Cannot delete a place which has ratings")
+    }
     const result = await this.placeRepo.deleteByProperties([
       {
         propertyName: 'id',
