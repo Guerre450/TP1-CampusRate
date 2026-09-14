@@ -14,14 +14,14 @@ describe('json-repository-test', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     const fileHandler: FileHandle = createMock<FileHandle>();
-    fileHandler.readFile = jest.fn()
+    fileHandler.readFile = jest.fn();
     fileHandler.truncate = jest.fn();
     fileHandler.write = jest.fn();
     fileHandler.sync = jest.fn();
     fileHandler.read = jest.fn().mockReturnValue('[]');
-    fileHandler.stat = jest.fn().mockReturnValue({size : 0})
+    fileHandler.stat = jest.fn().mockReturnValue({ size: 0 });
     repo = new JsonRepository<JsonRepoTest>(fileHandler);
-    repo.load = jest.fn()
+    repo.load = jest.fn();
   });
   it('is alive', () => {
     repo.load();

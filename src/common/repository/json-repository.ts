@@ -67,7 +67,6 @@ export class JsonRepository<Type extends object> {
       const stats = (await this.fileHandler.stat())
       let buffer = Buffer.alloc(stats.size) // Allocate a buffer to hold the data
       buffer = (await this.fileHandler.read(buffer,0,buffer.length,0)).buffer
-      console.log(buffer.toString())
       const tempDatas: object[] = JSON.parse(buffer.toString());
       
       if (
@@ -81,8 +80,8 @@ export class JsonRepository<Type extends object> {
       this.datas = tempDatas as Type[];
     } catch (exception: any) {
       if (exception instanceof SyntaxError) {
-        console.log(exception.stack)
-        console.log(`json has incorrect type, resetting file...`);
+        //console.log(exception.stack)
+        console.log(`json has incorrect type, memory data will be used...`);
       } else {
         if (exception instanceof Error) {
           console.error(exception.message);
