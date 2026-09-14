@@ -7,7 +7,7 @@ import { PlacesModule } from 'src/places/places.module';
 @Module({
   controllers: [RatingsController],
   providers: [RatingsService, PlacesService],
-  imports : [forwardRef(() => PlacesModule)],
-  exports : [RatingsService]
+  imports: [forwardRef(() => PlacesModule)],
+  exports: [RatingsService],
 })
 export class RatingsModule {}

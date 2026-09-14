@@ -6,7 +6,6 @@ import {
   InternalServerErrorException,
   OnApplicationBootstrap,
   OnApplicationShutdown,
-  Scope
 } from '@nestjs/common';
 import { openJsonDataFile } from 'src/common/json/json-operations';
 import { PageDetailsDto } from 'src/common/page-details/page-details.dto';
@@ -20,12 +19,16 @@ import { Place } from './entities/place.entity';
 import { RatingsService } from 'src/ratings/ratings.service';
 
 @Injectable()
-export class PlacesService implements OnApplicationBootstrap, OnApplicationShutdown {
-
-  constructor(@Inject(forwardRef(()=> RatingsService)) private readonly ratingsService: RatingsService) {}
+export class PlacesService
+  implements OnApplicationBootstrap, OnApplicationShutdown
+{
+  constructor(
+    @Inject(forwardRef(() => RatingsService))
+    private readonly ratingsService: RatingsService,
+  ) {}
   placeRepo: JsonRepository<Place>;
   async onApplicationBootstrap() {
-   this.placeRepo = new JsonRepository<Place>(
+    this.placeRepo = new JsonRepository<Place>(
       await openJsonDataFile(
         process.env.DATA_FILE_PATH ?? '/dammit/',
         'place.json',
@@ -33,12 +36,10 @@ export class PlacesService implements OnApplicationBootstrap, OnApplicationShutd
     );
     await this.placeRepo.load();
   }
-
-    async onApplicationShutdown(signal?: string) {
-      await this.placeRepo.close();
+  // eslint-disable-next-line
+  async onApplicationShutdown(signal?: string) {
+    await this.placeRepo.close();
   }
-
-
 
   async create(createPlaceDto: CreatePlaceDto) {
     const result = await this.placeRepo.create(new Place(createPlaceDto));
@@ -85,7 +86,7 @@ export class PlacesService implements OnApplicationBootstrap, OnApplicationShutd
     ]);
     if (!result.successful) {
       throw new BadRequestException(
-        `Did not find the place with the requested : ${id}`,
+        `Did not find the place with the requested id : ${id}`,
       );
     }
     return result.data ?? {};
@@ -103,15 +104,15 @@ export class PlacesService implements OnApplicationBootstrap, OnApplicationShutd
     );
     if (!result.successful) {
       throw new BadRequestException(
-        'Did not find the place with the requested id',
+        `Did not find the place with the requested id : ${id}`,
       );
     }
     return result.data ?? {};
   }
 
   async remove(id: string) {
-    if (((await this.ratingsService.findAll(id)).length > 0)){
-      throw new BadRequestException("Cannot delete a place which has ratings")
+    if ((await this.ratingsService.findAll(id)).length > 0) {
+      throw new BadRequestException('Cannot delete a place which has ratings');
     }
     const result = await this.placeRepo.deleteByProperties([
       {
@@ -121,7 +122,7 @@ export class PlacesService implements OnApplicationBootstrap, OnApplicationShutd
     ]);
     if (!result.successful) {
       throw new BadRequestException(
-        "Couldn't find the requested place with the id for deletion",
+        `Did not find the place with the requested id : ${id}`,
       );
     }
     return '';
