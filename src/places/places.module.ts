@@ -8,6 +8,6 @@ import { RatingsModule } from 'src/ratings/ratings.module';
   controllers: [PlacesController],
   providers: [PlacesService, RatingsService],
   exports: [PlacesService],
-  imports: [forwardRef(() => RatingsModule)]
+  imports: [forwardRef(() => RatingsModule)],
 })
 export class PlacesModule {}
