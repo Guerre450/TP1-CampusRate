@@ -27,7 +27,7 @@ export class RatingsController {
 
 
   @ApiOperation({
-    summary: "Find a rating",
+    summary: "Finds a rating",
     description: "Find a rating using a id"
   })
   @ApiParam(
@@ -41,8 +41,8 @@ export class RatingsController {
     return await this.ratingsService.findOne(id);
   }
   @ApiOperation({
-    summary: "List ratings of a place",
-    description: "list ratings related to a placeId"
+    summary: "Lists ratings of a place",
+    description: "lists ratings related to a placeId"
   })
   @ApiParam(
     {
@@ -92,7 +92,7 @@ export class RatingsController {
   }
 
   @ApiOperation({
-    summary : 'Delete rating by id',
+    summary : 'Deletes rating by id',
     description : "Finds a rating by it's id and deletes it"
   })
   @ApiNoContentResponse({

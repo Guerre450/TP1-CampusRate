@@ -77,14 +77,12 @@ export class PlacesService implements OnApplicationBootstrap, OnApplicationShutd
   }
 
   async findOne(id: string) {
-    console.log("find one")
     const result = await this.placeRepo.findByProperties([
       {
         propertyName: 'id',
         value: id,
       },
     ]);
-    console.log(result)
     if (!result.successful) {
       throw new BadRequestException(
         `Did not find the place with the requested : ${id}`,
